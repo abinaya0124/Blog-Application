@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Comment = require("../models/comment.js");
+const verifyToken = require("../verifyToken.jsx");
 
-router.post("/create", async (req, res) => {
+router.post("/create",verifyToken, async (req, res) => {
   try {
     const newComment = new Comment(req.body);
     const saveComment = await newComment.save();
@@ -12,7 +13,7 @@ router.post("/create", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id",verifyToken, async (req, res) => {
   try {
     const updated=await Comment.findByIdAndUpdate(req.params.id, {$set:req.body}, {new:true})
     res.status(200).json(updated)
@@ -21,7 +22,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",verifyToken, async (req, res) => {
   try {
     await Comment.findIdAndDelete(req.params.id)
     res.status(200).json("Comment has been deleted succesfully")
@@ -29,8 +30,6 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json(error)
   }
 });
-
-
 
 router.get("/post/:postId", async (req, res) => {
   try {

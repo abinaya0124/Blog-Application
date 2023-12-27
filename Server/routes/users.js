@@ -5,9 +5,10 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
 const Post = require("../models/post.js");
 const Comment = require("../models/comment.js");
+const verifyToken = require("../verifyToken.jsx");
 
 //update
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
@@ -25,7 +26,7 @@ router.put("/:id", async (req, res) => {
 });
 
 //delete
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     await Post.deleteMany({ userId: req.params.id });
@@ -41,7 +42,7 @@ router.delete("/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    const {password, ...info}=user._doc
+    const { password, ...info } = user._doc;
     res.status(200).json(info);
   } catch (error) {
     res.status(500).json(error);

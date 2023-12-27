@@ -9,9 +9,11 @@ import PostDetails from "./Pages/PostDetails.jsx";
 import CreatePost from "./Pages/CreatePost.jsx";
 import Profile from "./Pages/Profile.jsx";
 import EditPost from "./Pages/EditPost.jsx";
+import { UserContextProvider } from "./Context/UserContext.jsx";
 
 const App = () => {
-  return ( <div>
+  return (
+    <UserContextProvider>
       <Navbar />
       <Routes>
         <Route exact path="/" element={<Home />} />
@@ -23,7 +25,7 @@ const App = () => {
         <Route exact path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
-    </div>
+    </UserContextProvider>
   );
 };
 
