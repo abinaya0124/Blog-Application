@@ -10,6 +10,7 @@ import CreatePost from "./Pages/CreatePost.jsx";
 import Profile from "./Pages/Profile.jsx";
 import EditPost from "./Pages/EditPost.jsx";
 import { UserContextProvider } from "./Context/UserContext.jsx";
+import MyBlogs from "./Pages/MyBlogs.jsx";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route exact path="/create" element={<CreatePost />} />
         <Route exact path="/posts/post/:id" element={<PostDetails />} />
         <Route exact path="/edit/:id" element={<EditPost />} />
+        <Route exact path="/myblogs/:id" element={<MyBlogs />} />
         <Route exact path="/profile" element={<Profile />} />
       </Routes>
       <Footer />

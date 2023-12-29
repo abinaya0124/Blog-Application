@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-const User = require("../models/user.js");
-const Post = require("../models/post.js");
-const Comment = require("../models/comment.js");
+const User = require("../models/User");
+const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 const verifyToken = require("../verifyToken.jsx");
 
 //update

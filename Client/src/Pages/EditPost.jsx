@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ImCross } from "react-icons/im";
+import { useNavigate,useParams } from "react-router-dom";
+import { UserContext } from "../Context/UserContext";
 
 const EditPost = () => {
   const [cat, setCat] = useState("");
   const [cats, setCats] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState([]);
+  const {user}=useContext(UserContext)
+  const navigate=useNavigate()
+
+  const postId = useParams().id;
 
   const addCategory = () => {
     let updatedCats = [...cats];
@@ -17,6 +26,60 @@ const EditPost = () => {
     setCats(updatedCats);
   };
 
+  const fetchPost = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/posts/" + postId);
+      setTitle(res.data.title);
+      setDescription(res.data.description);
+      setFile(res.data.photo);
+      setCats(res.data.categories);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPost();
+  }, [postId]);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const post = {
+      title,
+      description,
+      username: user.username,
+      userId: user._id,
+      categories: cats,
+    };
+
+    if (file) {
+      const data = new FormData();
+      const filename = Date.now() + file.name;
+      data.append("img", filename);
+      data.append("file", file);
+      post.photo = filename;
+      // console.log(data)
+      //img upload
+      try {
+        const imgUpload = await axios.post("http://localhost:8000/api/upload", data);
+        console.log(imgUpload.data)
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    //post upload
+
+    try {
+      const res = await axios.put("http://localhost:8000/api/posts/" + postId, post, {
+        withCredentials: true,
+      });
+      navigate("/posts/post/" + res.data._id);
+      console.log(res.data)
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className="px-6 md:px-[200px] mt-8">
@@ -26,8 +89,14 @@ const EditPost = () => {
             type="text"
             placeholder="Enter post title"
             className="px-4 py-2 mt-4 outline-none "
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
           />
-          <input type="file" className="px-4" />
+          <input
+            type="file"
+            className="px-4"
+            onChange={(e) => e.target.files[0]}
+          />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
               <input
@@ -67,8 +136,13 @@ const EditPost = () => {
             cols={30}
             className="px-4 py-2 outline-none "
             placeholder="Enter post description"
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
           />
-          <button className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg">
+          <button
+            className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg"
+            onClick={handleUpdate}
+          >
             Update
           </button>
         </form>

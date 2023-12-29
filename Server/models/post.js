@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const PostSchema = mongoose.Schema(
+const PostSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -14,7 +14,7 @@ const PostSchema = mongoose.Schema(
     },
     photo: {
       type: String,
-      // required:true,
+      required:false,
     },
     username: {
       type: String,

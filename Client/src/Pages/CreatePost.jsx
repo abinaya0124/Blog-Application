@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { ImCross } from "react-icons/im";
+import { UserContext } from "../Context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CreatePost = () => {
   const [cat, setCat] = useState("");
   const [cats, setCats] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDes] = useState("");
+  const [file, setFile] = useState(null);
+  const { user } = useContext(UserContext);
+  console.log(file);
+  const navigate = useNavigate();
 
   const addCategory = () => {
     let updatedCats = [...cats];
@@ -13,11 +22,49 @@ const CreatePost = () => {
   };
 
   const deleteCategory = (id) => {
-    let updatedCats=[...cats];
-    updatedCats.splice(id)
-    setCats(updatedCats)
-    // let del=cats.filter((item, i)=>item.id!==i)
-    // setCats(del)
+    let updatedCats = [...cats];
+    updatedCats.splice(id);
+    setCats(updatedCats);
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const post = {
+      title,
+      description:description,
+      username: user.username,
+      userId: user._id,
+      categories: cat,
+    };
+    if (file) {
+      const data = new FormData();
+      const filename = Date.now() + file.name;
+      data.append("img", filename);
+      data.append("file", file);
+      post.photo = filename;
+      // console.log(data);
+      try {
+        const imgUpload = await axios.post(
+          "http://localhost:8000/api/upload",
+          data
+        );
+        console.log(imgUpload.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/posts/create",
+        post,
+        { withCredentials: true }
+      );
+      // console.log(res.data);
+      navigate("/posts/post/" + res.data._id);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -29,8 +76,13 @@ const CreatePost = () => {
             type="text"
             placeholder="Enter post title"
             className="px-4 py-2 outline-none mt-4"
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <input type="file" className="px-4" />
+          <input
+            type="file"
+            className="px-4"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
               <input
@@ -47,7 +99,6 @@ const CreatePost = () => {
                 Add
               </div>
             </div>
-            {/* Categories */}
             <div className="flex px-4 mt-3">
               {cats?.map((item, i) => (
                 <div
@@ -57,7 +108,7 @@ const CreatePost = () => {
                   <p>{item}</p>
                   <p
                     className="text-white bg-black rounded-full cursor-pointer p-1 text-sm"
-                    onClick={()=>deleteCategory(i)}
+                    onClick={() => deleteCategory(i)}
                   >
                     <ImCross />
                   </p>
@@ -70,8 +121,12 @@ const CreatePost = () => {
             cols={30}
             className="px-4 py-2 outline-none "
             placeholder="Enter post description"
+            onChange={(e) => setDes(e.target.value)}
           />
-          <button className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg">
+          <button
+            className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg"
+            onClick={handleCreate}
+          >
             Create
           </button>
         </form>

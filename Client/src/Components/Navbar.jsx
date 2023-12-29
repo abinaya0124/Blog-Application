@@ -10,6 +10,7 @@ const Navbar = () => {
   const [menu, setMenu] = useState(false);
   const navigate = useNavigate();
   const path = useLocation().pathname;
+  // console.log(path)
 
   // console.log(prompt)
 
@@ -80,15 +81,6 @@ const Navbar = () => {
         </p>
         {menu && <Menu />}
       </div>
-      {/* {user ? (
-          <h3>
-            <Link to="/profile">Profile</Link>
-          </h3>
-        ) : (
-          <h3>
-            <Link to="/register">Register</Link>
-          </h3>
-        )} */}
     </div>
   );
 };

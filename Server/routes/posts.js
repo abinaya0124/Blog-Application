@@ -1,19 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-
-const User = require("../models/user.js");
-const Post = require("../models/post.js");
-const Comment = require("../models/comment.js");
+const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 const verifyToken = require("../verifyToken.jsx");
 
 router.post('/create',verifyToken, async(req, res)=>{
   try {
     const newPost=new Post(req.body)
+    // console.log(req.body)
     const savePost=await newPost.save()
     res.status(200).json(savePost)
   } catch (error) {
-    res.status(200).json(error)
+    res.status(500).json(error)
   }
 })
 //update
